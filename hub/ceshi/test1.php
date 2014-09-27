@@ -6,25 +6,25 @@ function hublogin($username,$password)
 {
 	
 	$cookie=get_cookie();
-	// $time=time()."123";
-	// $key=get_key($username,$cookie,$time);
-	// $code=get_code($username,$key,$time);
+	$time=time()."123";
+	$key=get_key($username,$cookie,$time);
+	$code=get_code($username,$key,$time);
 	$postdata=array(
 		'usertype'    =>"xs",
 		'username'    =>$username,
 		'password'    =>$password,
-		// 'rand'	      =>$code,
-		// 'ln'	      =>'app68.dc.hust.edu.cn',  
-		// 'random_key1' =>$key[0],
-		// 'random_key2' =>$key[1],
+		'rand'	      =>$code,
+		'ln'	      =>'app68.dc.hust.edu.cn',  
+		'random_key1' =>$key[0],
+		'random_key2' =>$key[1],
 		'submit'	  =>'立即登录'
 		);
 	var_dump($postdata);
 	
 	$header=array(
-		'Connection'=>'timeout=10, max=100',
-		'Cache-Control'=>'No-cache',
-		'Accept'=>'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+		'Connection'=>' keep-alive',
+		'Cache-Control'=>'max-age=0',
+		'Accept'=>'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
 		'Content-Type'=>'application/x-www-form-urlencoded',
 		'User-Agent'=>'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36',
 		'Accept-Language'=>'zh-CN,zh;q=0.8',
@@ -33,7 +33,7 @@ function hublogin($username,$password)
 	//$url="http://profile.hub.hust.edu.cn/hublogin.action";
 	$cookie= dirname(__FILE__)."/valid.tmp";
 	$curl=curl_init($url);
-	curl_setopt($curl, CURLOPT_REFERER,"http://hub.hust.edu.cn/index.jsp");
+	curl_setopt($curl, CURLOPT_REFERER,"http://bksjw.hust.edu.cn/index.jsp");
 	curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 0);
     curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie);
@@ -42,7 +42,7 @@ function hublogin($username,$password)
     curl_setopt($curl, CURLOPT_POSTFIELDS, $postdata);
     $info = curl_exec($curl);
 	curl_close($curl);
-	//var_dump($info);
+	var_dump($info);
 	/*抓取姓名,年级和学院*/
 	$red_url="http://bksjw.hust.edu.cn/frames/body_left.jsp";
 	$curl=curl_init($red_url);
@@ -56,7 +56,6 @@ function hublogin($username,$password)
     // print_r($result);
     // echo "<pre>";
     preg_match("/欢迎.*登录/",$result, $nameStr);
-    var_dump($nameStr);
     $nameArr=explode(" ", $nameStr[0]);
     $name=$nameArr[1];				//获得你的姓名
    	echo "你的姓名： ".$name;
@@ -68,58 +67,18 @@ function hublogin($username,$password)
    		$temp=explode("： ",$school[1][0]);
    		array_push($info,$temp);
    	}
-   
-   	var_dump($info);
+   	var_dump($info);	//个人院系以及专业信息
+    
    $grade_url="http://bksjw.hust.edu.cn/aam/score/QueryScoreByStudent_readyToQuery.action?cdbh=225";
    $gch=curl_init($grade_url);
-   curl_setopt($gch, CURLOPT_REFERER, "http://bksjw.hust.edu.cn/frames/body_left.jsp");
+   curl_setopt($gch, CURLOPT_REFERER, "http://bksjw.hust.edu.cn/hub.jsp");
    curl_setopt($gch, CURLOPT_RETURNTRANSFER, 1);
    curl_setopt($gch, CURLOPT_COOKIEFILE, $cookie);
-   curl_setopt($gch, CURLOPT_COOKIEJAR, $cookie);
    // $result=curl_getinfo($curl);
    $g_info=curl_exec($gch);
-   curl_close($gch);		//获得查询成绩key1和key2
-   print_r($g_info);
+   curl_close($gch);
+   var_dump($g_info);
 
-   preg_match_all("/<input type=\"hidden\" name=\"(.*?)\" value=\"(.*?)\"/", $g_info, $input);
-   var_dump($input);
-   $key1=$input[2][0];
-   $key2=$input[2][1];
-   $stuSfid=$input[2][2]; //学号
-
-   /*查询成绩*/
-   $post=array(
-   	"key1"	=>$key1,
-   	"key2"	=>$key2,
-   	"stuSfid"=>$stuSfid,
-   	"type"=>"cj",		//type类型表示cj查询成绩，kb查询课表，zcj查询总成绩
-   	"xqselect"	=>"20132"	//20141:2014年秋季，20132：2014春
-   	);
-   var_dump($post);
-   $header=array(
-		'Connection'=>' keep-alive',
-		'Cache-Control'=>'max-age=0',
-		'Accept'=>'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-		'Content-Type'=>'application/x-www-form-urlencoded',
-		'User-Agent'=>'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.125 Safari/537.36',
-		'Accept-Language'=>'zh-CN,zh;q=0.8',
-		);
-	$url="http://bksjw.hust.edu.cn/aam/score/QueryScoreByStudent_queryScore.action";
-	//$url="http://profile.hub.hust.edu.cn/hublogin.action";
-	$cookie= dirname(__FILE__)."/valid.tmp";
-	$cj=curl_init($url);
-	//curl_setopt($cj, CURLOPT_REFERER,"http://bksjw.hust.edu.cn/aam/score/QueryScoreByStudent_queryScore.action");
-	curl_setopt($cj, CURLOPT_HTTPHEADER, $header);
-    curl_setopt($cj, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($cj, CURLOPT_COOKIEFILE, $cookie);
-  //	curl_setopt($cj, CURLOPT_COOKIEJAR, $cookie);
-    curl_setopt($cj, CURLOPT_POST,1);
-    curl_setopt($cj, CURLOPT_POSTFIELDS, $post);
-    $info = curl_exec($cj);
-	curl_close($cj);
-	print_r($info);
-    
-   
 
    
 }
