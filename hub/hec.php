@@ -1,7 +1,13 @@
 <?php
+
+/**
+*根据截取图片来获得图片的像素点
+* 
+*/
+
 for ($i = 0; $i < 10; $i++) {
     echo "'$i'=>'";
-    echo getHec($i."_0.jpg")."',<br>";
+    echo getHec($i.".jpg")."',<br>";
 }
  
 function getHec($imagePath) {

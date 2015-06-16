@@ -69,7 +69,7 @@ function hublogin($username,$password)
    		array_push($info,$temp);
    	}
    
-   	var_dump($info);
+   var_dump($info);
    $grade_url="http://bksjw.hust.edu.cn/aam/score/QueryScoreByStudent_readyToQuery.action?cdbh=225";
    $gch=curl_init($grade_url);
    curl_setopt($gch, CURLOPT_REFERER, "http://bksjw.hust.edu.cn/frames/body_left.jsp");
@@ -178,13 +178,9 @@ function get_code($username,$msg,$date)
 	$code = $valite->run();
 	return $code;
 }
-
-function get_user_info()
-{
-
-}
-
-hublogin("U201210787","endxNzY0MjEwM2x5");
+ 
+ 
+hublogin("U201210787","xxxxbase64加密xxxxx");
  
 
  

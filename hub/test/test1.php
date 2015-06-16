@@ -138,12 +138,8 @@ function get_code($username,$msg,$date)
 	return $code;
 }
 
-function get_user_info()
-{
 
-}
-
-hublogin("U201210787","endxNzY0MjEwM2x5");
+hublogin("U201210787", "xxxxbase64加密xxxxx");
  
 
  
